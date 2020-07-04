@@ -6,9 +6,7 @@ const luno = new Luno({
 
 (async () => {
   try {
-    console.log(await luno.getTicker({
-      pair: 'ETHXBT'
-    }))
+    console.log(await luno.getOrderBook({ })) 
   } catch (err) {
     console.error(err)
     throw err
