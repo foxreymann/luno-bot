@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "luno-node": "git+https://github.com/foxreymann/luno-node.git"
+    "luno-node": "git+https://github.com/foxreymann/luno-node.git",
+    "nodemon": "^2.0.4"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": ". ./.luno.sh && nodemon ."
   },
   "keywords": [],
   "author": "",
