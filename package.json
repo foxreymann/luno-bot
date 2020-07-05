@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "binance-api-node": "^0.10.4",
     "luno-node": "git+https://github.com/foxreymann/luno-node.git",
     "nodemon": "^2.0.4"
   },
