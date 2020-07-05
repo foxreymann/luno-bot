@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
-    "luno-node": "git+https://github.com/foxreymann/luno-node.git"
+    "luno-node": "git+https://github.com/foxreymann/luno-node.git",
+    "socket.io-client": "^2.3.0"
   },
   "devDependencies": {},
   "scripts": {
