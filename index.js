@@ -1,8 +1,6 @@
 const Luno = require('luno-node')
 const binance = (require('binance-api-node').default)()
 
-
-
 const luno = new Luno(
   process.env.LUNO_KEY_ID,
   process.env.LUNO_SECRET
@@ -28,7 +26,7 @@ console.log(xbtBalance)
       console.log('we dont have xbt to trade')
     }
 
-    setTimeout(trade, 2000)
+    setTimeout(trade, 20000)
   } catch (err) {
     console.error(err)
     throw err
@@ -37,10 +35,11 @@ console.log(xbtBalance)
 
 async function buy() {
   try {
-    // get luno eth price
-    let tickers = ( (await luno.getAllTickers()).tickers).filter(pair => pair.pair === 'XRPXBT')
+    // get all tickers
+    let lunoTickers = (await luno.getAllTickers()).tickers
+    let binanceTickers = await binance.allBookTickers()
 
-console.log(await binance.allBookTickers())
+console.log(Object.keys(binanceTickers).length)
 
 
   } catch (err) {
