@@ -5,19 +5,25 @@ const luno = new Luno(
   process.env.LUNO_SECRET
 );
 
-(async () => {
+setInterval(trade, 2500)
+
+async function trade() {
   try {
+
     let balance = (await luno.getBalance()).balance
-console.log(balance)
 
     // determine the state
+
     // find XBT balance
-    let xbtBalance = balance.filter(asset => asset.asset === 'XBT')
+    xbtBalance = +((balance.filter(asset => asset.asset === 'XBT'))[0].balance)
 
-console.log(xbtBalance)
-
+    if(xbtBalance > 0.01) {
+      console.log('we have XBT to trade')
+    } else {
+      console.log('we dont have xbt to trade')
+    }
   } catch (err) {
     console.error(err)
     throw err
   }
-})()
+}
