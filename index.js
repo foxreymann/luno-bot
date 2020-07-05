@@ -7,7 +7,15 @@ const luno = new Luno(
 
 (async () => {
   try {
-    console.log(await luno.getBalance())
+    let balance = (await luno.getBalance()).balance
+console.log(balance)
+
+    // determine the state
+    // find XBT balance
+    let xbtBalance = balance.filter(asset => asset.asset === 'XBT')
+
+console.log(xbtBalance)
+
   } catch (err) {
     console.error(err)
     throw err
