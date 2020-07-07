@@ -73,10 +73,12 @@ async function toBuyOrNotToBuy({
       binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
       lunoPrice = +lunoPrice
 
+/*
 console.log({xbtAlt})
 console.log({lunoPrice})
 console.log({binancePrice})
 console.log({binanceTrigger})
+*/
 
       if(lunoPrice < binanceTrigger) {
         // execute a buy order
@@ -98,7 +100,12 @@ async function toSellOrNotToSell({
   balance, lunoTickers, binanceTickers
 }) {
   try {
-    alts.map(alt => {
+    Object.keys(alts)
+    .filter(alt => {
+      altBalance = +((balance.filter(asset => asset.asset === alt))[0].balance)
+      return (altBalance > alts[alt].minTradableBalance)
+    })
+    .map(alt => {
 /*
       xbtBalance = +((balance.filter(asset => asset.asset === 'XBT'))[0].balance)
       console.log({xbtBalance})
@@ -110,6 +117,10 @@ async function toSellOrNotToSell({
 
       xbtAlt = alt + 'XBT'
       btcAlt = alt + 'BTC'
+
+      altBalance = +((balance.filter(asset => asset.asset === alt))[0].balance)
+console.log({alt})
+console.log({altBalance})
 
       let lunoPrice = (lunoTickers.filter(pair => pair.pair === xbtAlt))[0].ask
       let binancePrice = +(binanceTickers[btcAlt].askPrice)
