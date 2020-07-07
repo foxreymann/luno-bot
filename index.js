@@ -10,6 +10,7 @@ const luno = new Luno(
 setTimeout(trade, 0)
 
 buyTrigger = 0.003
+buyVolumeFactor = 0.1
 sellTrigger = 0.003
 minTradableBtcBalance = 0.0007
 
@@ -73,13 +74,6 @@ async function toBuyOrNotToBuy({
       binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
       lunoPrice = +lunoPrice
 
-/*
-console.log({xbtAlt})
-console.log({lunoPrice})
-console.log({binancePrice})
-console.log({binanceTrigger})
-*/
-
       if(lunoPrice < binanceTrigger) {
         // execute a buy order
         fs.appendFileSync('action.log', JSON.stringify({
@@ -88,9 +82,19 @@ console.log({binanceTrigger})
           lunoPrice,
           binancePrice
         }) + '\n')
+
+        // calculate volume
+        btcToTrade = xbtBalance * buyVolumeFactor
+        if(btcToTrade < minTradableBalance) {
+          btcToTrade = xbtBalance
+        }
+
+        volume = btcToTrade / lunoPrice
+
+        await luno.postMarketBuyOrder({
+          volume, pair: xbtAlt
+        })
       }
-
-
     })
   } catch (err) {
     console.error(err)
@@ -118,11 +122,6 @@ async function toSellOrNotToSell({
       binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
       lunoPrice = +lunoPrice
 
-console.log({xbtAlt})
-console.log({lunoPrice})
-console.log({binancePrice})
-console.log({binanceTrigger})
-
       if(lunoPrice < binanceTrigger) {
         // execute a sell market order
         fs.appendFileSync('action.log', JSON.stringify({
@@ -131,6 +130,12 @@ console.log({binanceTrigger})
           lunoPrice,
           binancePrice
         }) + '\n')
+
+        altBalance = +((balance.filter(asset => asset.asset === alt))[0].balance)
+
+        await luno.postMarketSellOrder({
+          volume: altBalance, pair: xbtAlt
+        })
       }
 
     })
