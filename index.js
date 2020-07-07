@@ -11,6 +11,8 @@ const alts = ['ETH', 'XRP', 'BCH', 'LTC']
 
 setTimeout(trade, 0)
 
+buyTrigger = 0.003
+
 async function trade() {
   try {
     let balance = (await luno.getBalance()).balance
@@ -48,16 +50,18 @@ async function toBuyOrNotToBuy() {
       xbtAlt = alt + 'XBT'
       btcAlt = alt + 'BTC'
       let lunoPrice = (lunoTickers.filter(pair => pair.pair === xbtAlt))[0].ask
-      let binancePrice = binanceTickers[btcAlt].askPrice
+      let binancePrice = +(binanceTickers[btcAlt].askPrice)
 
-      binancePrice = +(binancePrice.substring(0, lunoPrice.length))
+      binanceTrigger = binancePrice * (1 - buyTrigger)
+
+      binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
       lunoPrice = +lunoPrice
 
 console.log({lunoPrice})
 console.log({binancePrice})
+console.log({binanceTrigger})
 
-/*
-      if(lunoPrice < binancePrice * 0.997) {
+      if(lunoPrice < binanceTrigger) {
         // execute a buy order
         fs.appendFileSync('buy.log', JSON.stringify({
           xbtAlt,
@@ -65,7 +69,6 @@ console.log({binancePrice})
           binancePrice
         }))
       }
-*/
 
 
     })
