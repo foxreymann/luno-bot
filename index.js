@@ -86,11 +86,11 @@ async function toBuyOrNotToBuy({
 
           // calculate volume
           btcToTrade = xbtBalance * buyVolumeFactor
-          if(btcToTrade < minTradableBalance) {
+          if(btcToTrade < minTradableBtcBalance) {
             btcToTrade = xbtBalance
           }
 
-          volume = btcToTrade / lunoPrice
+          volume = (btcToTrade / lunoPrice).toFixed(6)
 
           await luno.postMarketBuyOrder({
             volume, pair: xbtAlt
@@ -121,7 +121,7 @@ async function toSellOrNotToSell({
         let lunoPrice = (lunoTickers.filter(pair => pair.pair === xbtAlt))[0].ask
         let binancePrice = +(binanceTickers[btcAlt].askPrice)
 
-        binanceTrigger = binancePrice * (1 + sellTriger)
+        binanceTrigger = binancePrice * (1 + sellTrigger)
 
         binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
         lunoPrice = +lunoPrice
