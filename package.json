@@ -1,7 +1,4 @@
 {
-  "engines": {
-    "node": "12.x"
-  },
   "name": "luno-bot",
   "version": "1.0.0",
   "description": "",
