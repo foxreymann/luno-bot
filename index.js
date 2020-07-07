@@ -15,16 +15,16 @@ minTradableBtcBalance = 0.0007
 
 const alts = {
   'ETH': {
-    minTradableBalance: 1
+    minTradableBalance: 0.01
   },
   'XRP': {
     minTradableBalance: 1
   },
   'BCH': {
-    minTradableBalance: 1
+    minTradableBalance: 0.01
   },
   'LTC': {
-    minTradableBalance: 1
+    minTradableBalance: 0.01
   }
 }
 
