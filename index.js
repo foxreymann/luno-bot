@@ -77,12 +77,12 @@ async function toBuyOrNotToBuy({
 
         if(lunoPrice < binanceTrigger) {
           // execute a buy order
-          fs.appendFileSync('action.log', JSON.stringify({
+          console.log(JSON.stringify({
             action: 'BUY',
             xbtAlt,
             lunoPrice,
             binancePrice
-          }) + '\n')
+          }))
 
           // calculate volume
           btcToTrade = xbtBalance * buyVolumeFactor
@@ -128,12 +128,12 @@ async function toSellOrNotToSell({
 
         if(lunoPrice < binanceTrigger) {
           // execute a sell market order
-          fs.appendFileSync('action.log', JSON.stringify({
+          console.log(JSON.stringify({
             action: 'SELL',
             xbtAlt,
             lunoPrice,
             binancePrice
-          }) + '\n')
+          }))
 
           altBalance = +((balance.filter(asset => asset.asset === alt))[0].balance)
 
