@@ -63,39 +63,41 @@ async function toBuyOrNotToBuy({
       return
     }
 
-    Object.keys(alts).map(alt => {
-      xbtAlt = alt + 'XBT'
-      btcAlt = alt + 'BTC'
-      let lunoPrice = (lunoTickers.filter(pair => pair.pair === xbtAlt))[0].ask
-      let binancePrice = +(binanceTickers[btcAlt].askPrice)
+    await Promise.all(
+      Object.keys(alts).map(async alt => {
+        xbtAlt = alt + 'XBT'
+        btcAlt = alt + 'BTC'
+        let lunoPrice = (lunoTickers.filter(pair => pair.pair === xbtAlt))[0].ask
+        let binancePrice = +(binanceTickers[btcAlt].askPrice)
 
-      binanceTrigger = binancePrice * (1 - buyTrigger)
+        binanceTrigger = binancePrice * (1 - buyTrigger)
 
-      binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
-      lunoPrice = +lunoPrice
+        binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
+        lunoPrice = +lunoPrice
 
-      if(lunoPrice < binanceTrigger) {
-        // execute a buy order
-        fs.appendFileSync('action.log', JSON.stringify({
-          action: 'BUY',
-          xbtAlt,
-          lunoPrice,
-          binancePrice
-        }) + '\n')
+        if(lunoPrice < binanceTrigger) {
+          // execute a buy order
+          fs.appendFileSync('action.log', JSON.stringify({
+            action: 'BUY',
+            xbtAlt,
+            lunoPrice,
+            binancePrice
+          }) + '\n')
 
-        // calculate volume
-        btcToTrade = xbtBalance * buyVolumeFactor
-        if(btcToTrade < minTradableBalance) {
-          btcToTrade = xbtBalance
+          // calculate volume
+          btcToTrade = xbtBalance * buyVolumeFactor
+          if(btcToTrade < minTradableBalance) {
+            btcToTrade = xbtBalance
+          }
+
+          volume = btcToTrade / lunoPrice
+
+          await luno.postMarketBuyOrder({
+            volume, pair: xbtAlt
+          })
         }
-
-        volume = btcToTrade / lunoPrice
-
-        await luno.postMarketBuyOrder({
-          volume, pair: xbtAlt
-        })
-      }
-    })
+      })
+    )
   } catch (err) {
     console.error(err)
   }
@@ -105,40 +107,42 @@ async function toSellOrNotToSell({
   balance, lunoTickers, binanceTickers
 }) {
   try {
-    Object.keys(alts)
+    let filteredAlts = Object.keys(alts)
     .filter(alt => {
       altBalance = +((balance.filter(asset => asset.asset === alt))[0].balance)
       return (altBalance > alts[alt].minTradableBalance)
     })
-    .map(alt => {
-      xbtAlt = alt + 'XBT'
-      btcAlt = alt + 'BTC'
 
-      let lunoPrice = (lunoTickers.filter(pair => pair.pair === xbtAlt))[0].ask
-      let binancePrice = +(binanceTickers[btcAlt].askPrice)
+    await Promise.all(
+      filteredAlts.map(async alt => {
+        xbtAlt = alt + 'XBT'
+        btcAlt = alt + 'BTC'
 
-      binanceTrigger = binancePrice * (1 + sellTriger)
+        let lunoPrice = (lunoTickers.filter(pair => pair.pair === xbtAlt))[0].ask
+        let binancePrice = +(binanceTickers[btcAlt].askPrice)
 
-      binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
-      lunoPrice = +lunoPrice
+        binanceTrigger = binancePrice * (1 + sellTriger)
 
-      if(lunoPrice < binanceTrigger) {
-        // execute a sell market order
-        fs.appendFileSync('action.log', JSON.stringify({
-          action: 'SELL',
-          xbtAlt,
-          lunoPrice,
-          binancePrice
-        }) + '\n')
+        binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
+        lunoPrice = +lunoPrice
 
-        altBalance = +((balance.filter(asset => asset.asset === alt))[0].balance)
+        if(lunoPrice < binanceTrigger) {
+          // execute a sell market order
+          fs.appendFileSync('action.log', JSON.stringify({
+            action: 'SELL',
+            xbtAlt,
+            lunoPrice,
+            binancePrice
+          }) + '\n')
 
-        await luno.postMarketSellOrder({
-          volume: altBalance, pair: xbtAlt
-        })
-      }
+          altBalance = +((balance.filter(asset => asset.asset === alt))[0].balance)
 
-    })
+          await luno.postMarketSellOrder({
+            volume: altBalance, pair: xbtAlt
+          })
+        }
+      })
+    )
   } catch (err) {
     console.error(err)
   }
