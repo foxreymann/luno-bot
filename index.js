@@ -82,11 +82,12 @@ console.log({binanceTrigger})
 
       if(lunoPrice < binanceTrigger) {
         // execute a buy order
-        fs.appendFileSync('buy.log', JSON.stringify({
+        fs.appendFileSync('action.log', JSON.stringify({
+          action: 'BUY',
           xbtAlt,
           lunoPrice,
           binancePrice
-        }))
+        }) + '\n')
       }
 
 
@@ -106,26 +107,13 @@ async function toSellOrNotToSell({
       return (altBalance > alts[alt].minTradableBalance)
     })
     .map(alt => {
-/*
-      xbtBalance = +((balance.filter(asset => asset.asset === 'XBT'))[0].balance)
-      console.log({xbtBalance})
-
-      if(xbtBalance < minTradableBtcBalance) {
-        return
-      }
-*/
-
       xbtAlt = alt + 'XBT'
       btcAlt = alt + 'BTC'
-
-      altBalance = +((balance.filter(asset => asset.asset === alt))[0].balance)
-console.log({alt})
-console.log({altBalance})
 
       let lunoPrice = (lunoTickers.filter(pair => pair.pair === xbtAlt))[0].ask
       let binancePrice = +(binanceTickers[btcAlt].askPrice)
 
-      binanceTrigger = binancePrice * (1 - buyTrigger)
+      binanceTrigger = binancePrice * (1 + sellTriger)
 
       binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
       lunoPrice = +lunoPrice
@@ -136,14 +124,14 @@ console.log({binancePrice})
 console.log({binanceTrigger})
 
       if(lunoPrice < binanceTrigger) {
-        // execute a buy order
-        fs.appendFileSync('buy.log', JSON.stringify({
+        // execute a sell market order
+        fs.appendFileSync('action.log', JSON.stringify({
+          action: 'SELL',
           xbtAlt,
           lunoPrice,
           binancePrice
-        }))
+        }) + '\n')
       }
-
 
     })
   } catch (err) {
