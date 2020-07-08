@@ -75,6 +75,8 @@ async function toBuyOrNotToBuy({
         binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
         lunoPrice = +lunoPrice
 
+        // price on luno is lower than reduced binance price
+        // so a buy opportunity
         if(lunoPrice < binanceTrigger) {
           // execute a buy order
           fs.appendFileSync('action.log', JSON.stringify({
@@ -135,6 +137,8 @@ async function toSellOrNotToSell({
         binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
         lunoPrice = +lunoPrice
 
+        // price on luno is higher than icreased binance price
+        // so sell as bear is approaching
         if(lunoPrice > binanceTrigger) {
           // execute a sell market order
           fs.appendFileSync('action.log', JSON.stringify({
