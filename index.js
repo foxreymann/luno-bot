@@ -93,7 +93,7 @@ async function toBuyOrNotToBuy({
             btcToTrade = xbtBalance
           }
 
-          btcToTrade = btcToTrade.toFixed(4)
+          btcToTrade = Math.trunc(btcToTrade * 10000) / 10000
 
           await luno.postMarketBuyOrder({
             volume: btcToTrade, pair: xbtAlt
@@ -155,7 +155,7 @@ async function toSellOrNotToSell({
           if(alt === 'XRP') {
             altBalance = Math.floor(altBalance)
           } else {
-            altBalance = altBalance.toFixed(2)
+            altBalance = Math.trund(altBalance * 100) / 100
           }
 
           await luno.postMarketSellOrder({
