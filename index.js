@@ -9,9 +9,9 @@ const luno = new Luno(
 
 setTimeout(trade, 0)
 
-buyTrigger = 0.003
+buyTrigger = 0.005
 buyVolumeFactor = 0.1
-sellTrigger = 0.003
+sellTrigger = 0.005
 minTradableBtcBalance = 0.0007
 
 const alts = {
@@ -81,7 +81,8 @@ async function toBuyOrNotToBuy({
             action: 'BUY',
             xbtAlt,
             lunoPrice,
-            binancePrice
+            binancePrice,
+            binanceTrigger
           }) + '\n')
 
           // calculate volume
@@ -95,6 +96,14 @@ async function toBuyOrNotToBuy({
           await luno.postMarketBuyOrder({
             volume: btcToTrade, pair: xbtAlt
           })
+        } else {
+          fs.appendFileSync('action.log', JSON.stringify({
+            action: 'DONT BUY',
+            xbtAlt,
+            lunoPrice,
+            binancePrice,
+            binanceTrigger
+          }) + '\n')
         }
       })
     )
@@ -126,13 +135,14 @@ async function toSellOrNotToSell({
         binanceTrigger = +((binanceTrigger + '').substring(0, lunoPrice.length))
         lunoPrice = +lunoPrice
 
-        if(lunoPrice < binanceTrigger) {
+        if(lunoPrice > binanceTrigger) {
           // execute a sell market order
           fs.appendFileSync('action.log', JSON.stringify({
             action: 'SELL',
             xbtAlt,
             lunoPrice,
-            binancePrice
+            binancePrice,
+            binanceTrigger
           }) + '\n')
 
           altBalance = +((balance.filter(asset => asset.asset === alt))[0].balance)
@@ -147,6 +157,14 @@ async function toSellOrNotToSell({
           await luno.postMarketSellOrder({
             volume: altBalance, pair: xbtAlt
           })
+        } else {
+          fs.appendFileSync('action.log', JSON.stringify({
+            action: 'DONT SELL',
+            xbtAlt,
+            lunoPrice,
+            binancePrice,
+            binanceTrigger
+          }) + '\n')
         }
       })
     )
